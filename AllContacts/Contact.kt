@@ -1,27 +1,23 @@
-package contacts
+package contacts.AllContacts
 
-class Contact {
+import java.time.Instant
+
+abstract class Contact {
     internal var name: String = ""
-
-    internal var surname: String = ""
-
     internal var phoneNumber: String = ""
         set(value) {
             field = checkNumber(value)
         }
 
-    init {
-        println("Enter the name:")
-        name = readln()
-        println("Enter the surname:")
-        surname = readln()
-        println("Enter the number:")
-        phoneNumber = readln()
-    }
+    internal val timeCreated = Instant.now()
+
+    internal var timeEdit = Instant.now()
+
+    abstract fun printInfo()
 
     private fun checkNumber(number: String): String {
         val listNum = number.split(Regex("[ \\-]"))
-        val regex1 = Regex("\\+?\\(.+\\)")
+        val regex1 = Regex("\\+?\\(.+\\)")     //it works, but +(23) - true!
         var countBrackets = 0
         try {
             for (i in listNum.indices) {
@@ -39,5 +35,4 @@ class Contact {
         return number
     }
 
-    override fun toString() = "$name $surname, $phoneNumber"
 }

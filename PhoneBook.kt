@@ -1,17 +1,19 @@
 package contacts
 
+import contacts.AllContacts.Contact
+
 class PhoneBook {
     private val book = mutableListOf<Contact>()
 
     internal fun showMenu() {
         while (true) {
-            println("Enter action (add, remove, edit, count, list, exit):")
+            println("Enter action (add, remove, edit, count, info, exit):")
             when(readln()) {
                 "add" -> addContact()
                 "remove" -> removeContact()
                 "edit" -> editContact()
                 "count" -> println("The Phone Book has ${book.size} records.")
-                "list" -> showBook()
+                "info" -> showInfo()
                 "exit" -> break
             }
         }
@@ -20,6 +22,11 @@ class PhoneBook {
     private fun addContact() {
         book.add(Contact())
         println("The record added.")
+    }
+
+    private fun showInfo() {
+        println("Enter index to show info:")
+        book[readln().toInt() - 1].printInfo()
     }
 
     private fun removeContact() {
