@@ -1,4 +1,4 @@
-package contacts.AllContacts
+package contacts.allContact
 
 class ContactOrg : Contact() {
     internal var address: String = ""

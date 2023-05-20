@@ -1,6 +1,9 @@
 package contacts
 
-import contacts.AllContacts.Contact
+import contacts.allContact.Contact
+import contacts.allContact.ContactOrg
+import contacts.allContact.ContactPerson
+import java.time.LocalDateTime
 
 class PhoneBook {
     private val book = mutableListOf<Contact>()
@@ -16,15 +19,18 @@ class PhoneBook {
                 "info" -> showInfo()
                 "exit" -> break
             }
+            println("")
         }
     }
 
     private fun addContact() {
-        book.add(Contact())
+        println("Enter the type (person, organization):")
+        if (readln() == "person") book.add(ContactPerson()) else book.add(ContactOrg())
         println("The record added.")
     }
 
     private fun showInfo() {
+        showBook()
         println("Enter index to show info:")
         book[readln().toInt() - 1].printInfo()
     }
@@ -48,15 +54,33 @@ class PhoneBook {
         showBook()
         println("Select a record:")
         val numberContact = readln().toInt() - 1
-        println("Select a field (name, surname, number):")
+        if (book[numberContact] is ContactPerson) editContactPerson(numberContact) else editContactOrg(numberContact)
+        println("The record updated!")
+        book[numberContact].timeEdit = LocalDateTime.now().toString()
+    }
+
+    private fun editContactPerson(numberContact: Int) {
+        val person = book[numberContact] as ContactPerson
+        println("Select a field (name, surname, birth, gender, number):")
         val field = readln()
         println("Enter $field:")
         when (field) {
-            "name" -> book[numberContact].name = readln()
-            "surname" -> book[numberContact].surname = readln()
-            "number" -> book[numberContact].phoneNumber = readln()
+            "name" -> person.name = readln()
+            "surname" -> person.surname = readln()
+            "birth" -> person.birthDate = readln()
+            "gender" -> person.gender = readln()
+            "number" -> person.phoneNumber = readln()
         }
-        println("The record updated!")
+        book[numberContact] = person
+    }
+
+    private fun editContactOrg(numberContact: Int) {
+        val org = book[numberContact] as ContactOrg
+        println("Select a field (address, number):")
+        val field = readln()
+        println("Enter $field:")
+        if (field == "address") org.address = readln() else org.phoneNumber = readln()
+        book[numberContact] = org
     }
 
     private fun showBook() {

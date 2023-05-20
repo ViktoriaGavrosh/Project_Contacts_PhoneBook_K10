@@ -1,6 +1,6 @@
-package contacts.AllContacts
+package contacts.allContact
 
-import java.time.Instant
+import java.time.LocalDateTime
 
 abstract class Contact {
     internal var name: String = ""
@@ -9,9 +9,12 @@ abstract class Contact {
             field = checkNumber(value)
         }
 
-    internal val timeCreated = Instant.now()
+    internal val timeCreated = LocalDateTime.now().toString().substring(0, 16)
 
-    internal var timeEdit = Instant.now()
+    internal var timeEdit = LocalDateTime.now().toString().substring(0, 16)
+        set(value) {
+            field = value.substring(0, 16)
+        }
 
     abstract fun printInfo()
 
