@@ -3,25 +3,24 @@ package contacts
 import contacts.allContact.Contact
 import contacts.allContact.ContactOrg
 import contacts.allContact.ContactPerson
-import java.time.LocalDateTime
 
 class PhoneBook {
     private val book = mutableListOf<Contact>()
 
     internal fun showMenu() {
         while (true) {
-            println("Enter action (add, remove, edit, count, info, exit):")
+            println("[menu] Enter action (add, list, search, count, exit):")
             when(readln()) {
                 "add" -> addContact()
-                "remove" -> removeContact()
-                "edit" -> editContact()
+                "list" -> showBook()
+                "search" -> searchStart()
                 "count" -> println("The Phone Book has ${book.size} records.")
-                "info" -> showInfo()
                 "exit" -> break
             }
             println("")
         }
     }
+
 
     private fun addContact() {
         println("Enter the type (person, organization):")
@@ -29,61 +28,62 @@ class PhoneBook {
         println("The record added.")
     }
 
-    private fun showInfo() {
+    /*private fun showInfo() {
         showBook()
         println("Enter index to show info:")
         book[readln().toInt() - 1].printInfo()
+    }*/
+
+    private fun showChangeMenu(index: Int) {
+        while (true) {
+            println("\n[record] Enter action (edit, delete, menu):")
+            when (readln()) {
+                "edit" -> book[index].editContact()
+                "delete" -> deleteContact(index)
+                "menu" -> return
+            }
+        }
     }
 
-    private fun removeContact() {
+    private fun searchStart() {
+        while (true) {
+            println("Enter search query:")
+            val listFindContacts = searchInBook(Regex(readln().lowercase()))
+            println("Found ${listFindContacts.size} results:")
+            for (i in listFindContacts.indices) println("${i + 1}. ${listFindContacts[i]}")
+            println("\n[search] Enter action ([number], back, again):")
+            when(val input = readln()) {
+                "back" -> break
+                "again" -> continue
+                else -> {
+                    book[input.toInt() - 1].printInfo()
+                    showChangeMenu(input.toInt() - 1)
+                    break
+                }
+            }
+        }
+    }
+
+    private fun searchInBook(regex: Regex): List<Contact> {
+        val list = mutableListOf<Contact>()
+        for (i in book) if (i.checkAllFields(regex)) list.add(i)
+        return list
+    }
+
+    private fun deleteContact(index: Int) {
         if (book.size == 0) {
             println("No records to remove!")
             return
         }
-        showBook()
-        println("Select a record:")
-        book.removeAt(readln().toInt() - 1)
+        book.removeAt(index)
         println("The record removed!")
-    }
-
-    private fun editContact() {
-        if (book.size == 0) {
-            println("No records to edit!")
-            return
-        }
-        showBook()
-        println("Select a record:")
-        val numberContact = readln().toInt() - 1
-        if (book[numberContact] is ContactPerson) editContactPerson(numberContact) else editContactOrg(numberContact)
-        println("The record updated!")
-        book[numberContact].timeEdit = LocalDateTime.now().toString()
-    }
-
-    private fun editContactPerson(numberContact: Int) {
-        val person = book[numberContact] as ContactPerson
-        println("Select a field (name, surname, birth, gender, number):")
-        val field = readln()
-        println("Enter $field:")
-        when (field) {
-            "name" -> person.name = readln()
-            "surname" -> person.surname = readln()
-            "birth" -> person.birthDate = readln()
-            "gender" -> person.gender = readln()
-            "number" -> person.phoneNumber = readln()
-        }
-        book[numberContact] = person
-    }
-
-    private fun editContactOrg(numberContact: Int) {
-        val org = book[numberContact] as ContactOrg
-        println("Select a field (address, number):")
-        val field = readln()
-        println("Enter $field:")
-        if (field == "address") org.address = readln() else org.phoneNumber = readln()
-        book[numberContact] = org
     }
 
     private fun showBook() {
         for (i in book.indices) println("${i + 1}. ${book[i]}")
+        println("\n[list] Enter action ([number], back):")
+        val input = readln()
+        if (input == "back") return else book[input.toInt() - 1].printInfo()
+        showChangeMenu(input.toInt() - 1)
     }
 }

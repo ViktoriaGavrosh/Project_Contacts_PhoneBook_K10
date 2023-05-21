@@ -1,16 +1,17 @@
 package contacts.allContact
 
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 class ContactPerson : Contact() {
-    internal var surname: String = ""
+    private var surname: String = ""
 
-    internal var birthDate = "[no data]"
+    private var birthDate = "[no data]"
         set(value) {
             field = checkBirthday(value)
         }
 
-    internal var gender = "[no data]"
+    private var gender = "[no data]"
         set(value) {
             field = checkGender(value)
         }
@@ -31,6 +32,40 @@ class ContactPerson : Contact() {
     override fun printInfo() {
         println("Name: $name\nSurname: $surname\nBirth date: $birthDate\nGender: $gender")
         println("Number: $phoneNumber\nTime created: $timeCreated\nTime last edit: $timeEdit")
+    }
+
+    override fun changeField(field: String, value: String) {
+        super.changeField(field, value)
+        when (field) {
+            "surname" -> surname = value
+            "birth" -> birthDate = value
+            "gender" -> gender = value
+        }
+    }
+
+    override fun showFieldsToChange() = "name, surname, birth, gender, number"
+
+    override fun checkAllFields(regex: Regex)= when {
+        name.lowercase().contains(regex) -> true
+        surname.lowercase().contains(regex) -> true
+        birthDate.lowercase().contains(regex) -> true
+        phoneNumber.lowercase().contains(regex) -> true
+        else -> false
+    }
+
+    override fun editContact() {
+        println("Select a field (name, surname, birth, gender, number):")
+        val field = readln()
+        println("Enter $field:")
+        when (field) {
+            "name" -> name = readln()
+            "surname" -> surname = readln()
+            "birth" -> birthDate = readln()
+            "gender" -> gender = readln()
+            "number" -> phoneNumber = readln()
+        }
+        println("Saved")
+        timeEdit = LocalDateTime.now().toString()
     }
 
     private fun checkBirthday(stringDate: String): String {

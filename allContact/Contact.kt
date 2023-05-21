@@ -18,6 +18,19 @@ abstract class Contact {
 
     abstract fun printInfo()
 
+    abstract fun showFieldsToChange(): String
+
+    abstract fun checkAllFields(regex: Regex): Boolean
+
+    internal open fun changeField(field: String, value: String) {
+        when (field) {
+            "name" -> name = value
+            "number" -> phoneNumber = value
+        }
+    }
+
+    abstract fun editContact()
+
     private fun checkNumber(number: String): String {
         val listNum = number.split(Regex("[ \\-]"))
         val regex1 = Regex("\\+?\\(.+\\)")     //it works, but +(23) - true!
