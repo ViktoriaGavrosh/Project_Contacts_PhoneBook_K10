@@ -9,7 +9,7 @@ abstract class Contact {
             field = checkNumber(value)
         }
 
-    internal val timeCreated = LocalDateTime.now().toString().substring(0, 16)
+    internal var timeCreated = LocalDateTime.now().toString().substring(0, 16)
 
     internal var timeEdit = LocalDateTime.now().toString().substring(0, 16)
         set(value) {
@@ -22,10 +22,24 @@ abstract class Contact {
 
     abstract fun checkAllFields(regex: Regex): Boolean
 
+    internal open fun serializeString(): String {
+        val res = "{\"name\": \"$name\", \"phoneNumber\": \"$phoneNumber\", "
+        return "$res\"timeCreated\": \"$timeCreated\", \"timeEdit\": \"$timeEdit\", "
+    }
+
+    internal fun deserialize(listFields: List<String>) {
+        for (i in listFields) {
+            val field = i.substring(1,i.lastIndex - 1).split("\": \"")
+            changeField(field[0], field[1])
+        }
+    }
+
     internal open fun changeField(field: String, value: String) {
         when (field) {
             "name" -> name = value
             "number" -> phoneNumber = value
+            "timeCreated" -> timeCreated = value
+            "timeEdit" -> timeEdit = value
         }
     }
 

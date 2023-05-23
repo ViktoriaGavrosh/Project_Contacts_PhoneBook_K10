@@ -53,17 +53,16 @@ class ContactPerson : Contact() {
         else -> false
     }
 
+    override fun serializeString(): String {
+        val res = super.serializeString()
+        return "$res\"surname\": \"$surname\", \"birthDate\": \"$birthDate\", \"gender\": \"$gender\"}"
+    }
+
     override fun editContact() {
         println("Select a field (name, surname, birth, gender, number):")
         val field = readln()
         println("Enter $field:")
-        when (field) {
-            "name" -> name = readln()
-            "surname" -> surname = readln()
-            "birth" -> birthDate = readln()
-            "gender" -> gender = readln()
-            "number" -> phoneNumber = readln()
-        }
+        changeField(field, readln())
         println("Saved")
         timeEdit = LocalDateTime.now().toString()
     }

@@ -28,11 +28,7 @@ class ContactOrg : Contact() {
         println("Select a field (name, address, number):")
         val field = readln()
         println("Enter $field:")
-        when (field) {
-            "name" -> name = readln()
-            "address" -> address = readln()
-            "number" -> phoneNumber = readln()
-        }
+        changeField(field, readln())
         println("Saved")
         timeEdit = LocalDateTime.now().toString()
         printInfo()
@@ -45,6 +41,11 @@ class ContactOrg : Contact() {
         address.lowercase().contains(regex) -> true
         phoneNumber.lowercase().contains(regex) -> true
         else -> false
+    }
+
+    override fun serializeString(): String {
+        val res = super.serializeString()
+        return "$res\"address\": \"$address\"}"
     }
 
     override fun toString() = name

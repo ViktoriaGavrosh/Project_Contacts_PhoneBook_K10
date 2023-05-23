@@ -3,9 +3,10 @@ package contacts
 import contacts.allContact.Contact
 import contacts.allContact.ContactOrg
 import contacts.allContact.ContactPerson
+import java.io.File
 
-class PhoneBook {
-    private val book = mutableListOf<Contact>()
+class PhoneBook(val file: File) {
+    internal var book = mutableListOf<Contact>()
 
     internal fun showMenu() {
         while (true) {
