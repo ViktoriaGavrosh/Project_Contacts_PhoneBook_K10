@@ -9,7 +9,7 @@ fun main(args: Array<String>) {
     val wayToFile = try {
         args.first()
     } catch (e: Exception) {
-        "C:\\Users\\phonebook.txt"
+        "C:\\a\\phonebook.txt"
     }
     val file = File(wayToFile)
     println("open ${file.name}\n")
@@ -17,7 +17,7 @@ fun main(args: Array<String>) {
     phoneBook.showMenu()
 }
 
-internal fun save(file: File, book: MutableList<Contact>) {   //добавить этот метод в PhoneBook
+internal fun save(file: File, book: MutableList<Contact>) {
     val bookString = bookToString(book)
     file.writeText(bookString)
 }
@@ -38,10 +38,11 @@ private fun bookToString(book: MutableList<Contact>): String {
 
 private fun toPhoneBook(text: String, file: File): PhoneBook {
     val book = mutableListOf<Contact>()
-    val listText = text.split(Regex("[\\[\\]]"))
-    val contacts = listText[1].split("}, {").toMutableList()
+    val listText = text.split(Regex(" \\["))
+    if (listText[1].length < 3) return PhoneBook(file)
+    val contacts = listText[1].substring(0, listText[1].lastIndex - 1).split("}, {").toMutableList()
     for (i in contacts) {
-        val cont = i.replace(Regex("[\\{\\}]"), "").split(", ")
+        val cont = i.replace(Regex("[{}]"), "").split(", ")
         val j = if (cont.size > 5) ContactPerson() else ContactOrg()
         j.deserialize(cont)
         book.add(j)

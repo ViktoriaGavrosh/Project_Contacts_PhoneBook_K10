@@ -5,7 +5,7 @@ import contacts.allContact.ContactOrg
 import contacts.allContact.ContactPerson
 import java.io.File
 
-class PhoneBook(val file: File) {
+class PhoneBook(private val file: File) {
     internal var book = mutableListOf<Contact>()
 
     internal fun showMenu() {
@@ -25,7 +25,10 @@ class PhoneBook(val file: File) {
 
     private fun addContact() {
         println("Enter the type (person, organization):")
-        if (readln() == "person") book.add(ContactPerson()) else book.add(ContactOrg())
+        val contact = if (readln() == "person") ContactPerson() else ContactOrg()
+        contact.initContact()
+        book.add(0, contact)
+        save(file, book)
         println("The record added.")
     }
 
@@ -43,21 +46,30 @@ class PhoneBook(val file: File) {
                 "delete" -> deleteContact(index)
                 "menu" -> return
             }
+            save(file, book)
         }
     }
 
     private fun searchStart() {
         while (true) {
             println("Enter search query:")
-            val listFindContacts = searchInBook(Regex(readln().lowercase()))
+            val text = readln()
+            val listFindContacts = searchInBook(Regex(text.lowercase()))
             println("Found ${listFindContacts.size} results:")
-            for (i in listFindContacts.indices) println("${i + 1}. ${listFindContacts[i]}")
+            for (i in listFindContacts.indices) {
+                try {
+                    text.toInt()
+                    println("${i + 1}. ${listFindContacts[i].phoneNumber}")
+                } catch (e: Exception) {
+                    println("${i + 1}. ${listFindContacts[i]}")
+                }
+            }
             println("\n[search] Enter action ([number], back, again):")
             when(val input = readln()) {
                 "back" -> break
                 "again" -> continue
                 else -> {
-                    book[input.toInt() - 1].printInfo()
+                    listFindContacts[input.toInt() - 1].printInfo()
                     showChangeMenu(input.toInt() - 1)
                     break
                 }
@@ -67,7 +79,7 @@ class PhoneBook(val file: File) {
 
     private fun searchInBook(regex: Regex): List<Contact> {
         val list = mutableListOf<Contact>()
-        for (i in book) if (i.checkAllFields(regex)) list.add(i)
+        for (i in book) if (i.checkAllFields(regex)) list.add(0, i)
         return list
     }
 

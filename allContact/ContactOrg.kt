@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 class ContactOrg : Contact() {
     private var address: String = ""
 
-    init {
+    override fun initContact() {
         println("Enter the organization name:")
         name = readln()
         println("Enter the address:")

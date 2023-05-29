@@ -16,7 +16,7 @@ class ContactPerson : Contact() {
             field = checkGender(value)
         }
 
-    init {
+    override fun initContact() {
         println("Enter the name:")
         name = readln()
         println("Enter the surname:")
@@ -48,7 +48,6 @@ class ContactPerson : Contact() {
     override fun checkAllFields(regex: Regex)= when {
         name.lowercase().contains(regex) -> true
         surname.lowercase().contains(regex) -> true
-        birthDate.lowercase().contains(regex) -> true
         phoneNumber.lowercase().contains(regex) -> true
         else -> false
     }
@@ -65,6 +64,7 @@ class ContactPerson : Contact() {
         changeField(field, readln())
         println("Saved")
         timeEdit = LocalDateTime.now().toString()
+        printInfo()
     }
 
     private fun checkBirthday(stringDate: String): String {
@@ -72,14 +72,14 @@ class ContactPerson : Contact() {
             LocalDate.parse(stringDate)
             stringDate
         } catch (e: Exception){
-            println("Bad birth date!")
+            if (!isDeserialize) println("Bad birth date!")
             "[no data]"
         }
     }
 
     private fun checkGender(gender: String): String {
         return if (gender != "M" && gender != "F") {
-            println("Bad gender!")
+            if (!isDeserialize) println("Bad gender!")
             "[no data]"
         } else gender
     }

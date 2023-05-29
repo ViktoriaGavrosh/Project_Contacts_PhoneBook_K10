@@ -4,7 +4,7 @@ import java.time.LocalDateTime
 
 abstract class Contact {
     internal var name: String = ""
-    internal var phoneNumber: String = ""
+    internal var phoneNumber: String = ""        //"[no number]"
         set(value) {
             field = checkNumber(value)
         }
@@ -13,10 +13,14 @@ abstract class Contact {
 
     internal var timeEdit = LocalDateTime.now().toString().substring(0, 16)
         set(value) {
-            field = value.substring(0, 16)
+            field = if (value.length > 15) value.substring(0, 16) else value
         }
 
+    internal var isDeserialize = false
+
     abstract fun printInfo()
+
+    abstract fun initContact()
 
     abstract fun showFieldsToChange(): String
 
@@ -28,16 +32,18 @@ abstract class Contact {
     }
 
     internal fun deserialize(listFields: List<String>) {
+        isDeserialize = true
         for (i in listFields) {
-            val field = i.substring(1,i.lastIndex - 1).split("\": \"")
+            val field = i.substring(1,i.lastIndex).split("\": \"")
             changeField(field[0], field[1])
         }
+        isDeserialize = false
     }
 
     internal open fun changeField(field: String, value: String) {
         when (field) {
             "name" -> name = value
-            "number" -> phoneNumber = value
+            "number", "phoneNumber" -> phoneNumber = value
             "timeCreated" -> timeCreated = value
             "timeEdit" -> timeEdit = value
         }
@@ -50,6 +56,7 @@ abstract class Contact {
         val regex1 = Regex("\\+?\\(.+\\)")     //it works, but +(23) - true!
         var countBrackets = 0
         try {
+            //if (!Regex("\\d+").containsMatchIn(number)) throw Exception()   //поменять!!!
             for (i in listNum.indices) {
                 val regex2 = if (i == 0) Regex("\\+?\\(\\w+\\)|\\+?\\w+") else Regex("\\(\\w{2,}\\)|\\w{2,}")
                 if (regex1.matches(listNum[i])) {
@@ -59,8 +66,8 @@ abstract class Contact {
                 if (!regex2.matches(listNum[i])) throw Exception()
             }
         } catch (e: Exception) {
-            println("Wrong number format!")
-            return "[no number]"
+            if (!isDeserialize) println("Wrong number format!")
+            return phoneNumber
         }
         return number
     }
